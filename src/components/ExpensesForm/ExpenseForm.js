@@ -1,8 +1,10 @@
-import React, { Component } from "react";
-import Form from "./shared/Form";
-import Label from "./shared/Label";
-import Input from "./shared/Input";
-import Button from "./shared/Button";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import shortid from 'shortid';
+import Form from '../shared/Form';
+import Label from '../shared/Label';
+import Input from '../shared/Input';
+import Button from '../shared/Button';
 
 const labelStyles = `
   margin-bottom: 16px;  
@@ -10,27 +12,33 @@ const labelStyles = `
 
 export default class ExpenseForm extends Component {
   state = {
-    name: "",
-    amount: 0
+    name: '',
+    amount: 0,
   };
 
   handleChange = e => {
     this.setState({
-      [e.target.name]: e.target.value
-    }); // --!!!---operation with store---!!!---
+      [e.target.name]: e.target.value,
+    });
   };
 
   handleSubmit = e => {
     e.preventDefault();
+    const { name, amount } = this.state;
+    const { addExpense } = this.props;
+    const expense = {
+      id: shortid(),
+      name,
+      amount: Number(amount),
+    };
 
-    this.props.onSave({
-      ...this.state
-    }); // --!!!---operation with store---!!!---only expense
+    addExpense(expense);
 
-    this.setState({ name: "", amount: 0 }); // --!!!---operation with store---!!!---
+    this.setState({ name: '', amount: 0 });
   };
 
   render() {
+    const { name, amount } = this.state;
     return (
       <Form onSubmit={this.handleSubmit}>
         <Label customStyles={labelStyles}>
@@ -38,7 +46,7 @@ export default class ExpenseForm extends Component {
           <Input
             type="text"
             name="name"
-            value={this.state.name} // --!!!---operation with store---!!!---
+            value={name}
             onChange={this.handleChange}
           />
         </Label>
@@ -47,7 +55,7 @@ export default class ExpenseForm extends Component {
           <Input
             type="number"
             name="amount"
-            value={this.state.amount} // --!!!---operation with store---!!!---
+            value={amount}
             onChange={this.handleChange}
           />
         </Label>
@@ -57,3 +65,7 @@ export default class ExpenseForm extends Component {
     );
   }
 }
+
+ExpenseForm.propTypes = {
+  addExpense: PropTypes.func.isRequired,
+};
